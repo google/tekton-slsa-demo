@@ -1,0 +1,224 @@
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "predicateType": "https://slsa.dev/provenance/v0.2",
+  "subject": [
+    {
+      "name": "us-docker.pkg.dev/jagathprakash-test/jp-repo/slsa-demo-cluster",
+      "digest": {
+        "sha256": "391404e8d5771126119f70a375c53cf2281e2ddf2262e9a316e12121b04cbaa7"
+      }
+    }
+  ],
+  "predicate": {
+    "builder": {
+      "id": "www.example.org/tekton-builder"
+    },
+    "buildType": "tekton.dev/v1beta1/PipelineRun",
+    "invocation": {
+      "configSource": {},
+      "parameters": {
+        "image-reference": "us-docker.pkg.dev/jagathprakash-test/jp-repo/slsa-demo-cluster",
+        "repo-url": "https://github.com/bendory/mini-true.git"
+      }
+    },
+    "buildConfig": {
+      "tasks": [
+        {
+          "name": "fetch-source",
+          "ref": {
+            "kind": "Task",
+            "resolver": "git",
+            "params": [
+              {
+                "name": "url",
+                "value": "https://github.com/tektoncd/catalog.git"
+              },
+              {
+                "name": "pathInRepo",
+                "value": "/task/git-clone/0.6/git-clone.yaml"
+              },
+              {
+                "name": "revision",
+                "value": "main"
+              }
+            ]
+          },
+          "startedOn": "2023-01-24T20:09:41Z",
+          "finishedOn": "2023-01-24T20:09:56Z",
+          "status": "Succeeded",
+          "steps": [
+            {
+              "entryPoint": "#!/usr/bin/env sh\nset -eu\n\nif [ \"${PARAM_VERBOSE}\" = \"true\" ] ; then\n  set -x\nfi\n\n\nif [ \"${WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND}\" = \"true\" ] ; then\n  cp \"${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.git-credentials\" \"${PARAM_USER_HOME}/.git-credentials\"\n  cp \"${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.gitconfig\" \"${PARAM_USER_HOME}/.gitconfig\"\n  chmod 400 \"${PARAM_USER_HOME}/.git-credentials\"\n  chmod 400 \"${PARAM_USER_HOME}/.gitconfig\"\nfi\n\nif [ \"${WORKSPACE_SSH_DIRECTORY_BOUND}\" = \"true\" ] ; then\n  cp -R \"${WORKSPACE_SSH_DIRECTORY_PATH}\" \"${PARAM_USER_HOME}\"/.ssh\n  chmod 700 \"${PARAM_USER_HOME}\"/.ssh\n  chmod -R 400 \"${PARAM_USER_HOME}\"/.ssh/*\nfi\n\nif [ \"${WORKSPACE_SSL_CA_DIRECTORY_BOUND}\" = \"true\" ] ; then\n   export GIT_SSL_CAPATH=\"${WORKSPACE_SSL_CA_DIRECTORY_PATH}\"\nfi\nCHECKOUT_DIR=\"${WORKSPACE_OUTPUT_PATH}/${PARAM_SUBDIRECTORY}\"\n\ncleandir() {\n  # Delete any existing contents of the repo directory if it exists.\n  #\n  # We don't just \"rm -rf ${CHECKOUT_DIR}\" because ${CHECKOUT_DIR} might be \"/\"\n  # or the root of a mounted volume.\n  if [ -d \"${CHECKOUT_DIR}\" ] ; then\n    # Delete non-hidden files and directories\n    rm -rf \"${CHECKOUT_DIR:?}\"/*\n    # Delete files and directories starting with . but excluding ..\n    rm -rf \"${CHECKOUT_DIR}\"/.[!.]*\n    # Delete files and directories starting with .. plus any other character\n    rm -rf \"${CHECKOUT_DIR}\"/..?*\n  fi\n}\n\nif [ \"${PARAM_DELETE_EXISTING}\" = \"true\" ] ; then\n  cleandir\nfi\n\ntest -z \"${PARAM_HTTP_PROXY}\" || export HTTP_PROXY=\"${PARAM_HTTP_PROXY}\"\ntest -z \"${PARAM_HTTPS_PROXY}\" || export HTTPS_PROXY=\"${PARAM_HTTPS_PROXY}\"\ntest -z \"${PARAM_NO_PROXY}\" || export NO_PROXY=\"${PARAM_NO_PROXY}\"\n\n/ko-app/git-init \\\n  -url=\"${PARAM_URL}\" \\\n  -revision=\"${PARAM_REVISION}\" \\\n  -refspec=\"${PARAM_REFSPEC}\" \\\n  -path=\"${CHECKOUT_DIR}\" \\\n  -sslVerify=\"${PARAM_SSL_VERIFY}\" \\\n  -submodules=\"${PARAM_SUBMODULES}\" \\\n  -depth=\"${PARAM_DEPTH}\" \\\n  -sparseCheckoutDirectories=\"${PARAM_SPARSE_CHECKOUT_DIRECTORIES}\"\ncd \"${CHECKOUT_DIR}\"\nRESULT_SHA=\"$(git rev-parse HEAD)\"\nEXIT_CODE=\"$?\"\nif [ \"${EXIT_CODE}\" != 0 ] ; then\n  exit \"${EXIT_CODE}\"\nfi\nprintf \"%s\" \"${RESULT_SHA}\" > \"/tekton/results/commit\"\nprintf \"%s\" \"${PARAM_URL}\" > \"/tekton/results/url\"\n",
+              "arguments": null,
+              "environment": {
+                "container": "clone",
+                "image": "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init@sha256:c0b0ed1cd81090ce8eecf60b936e9345089d9dfdb6ebdd2fd7b4a0341ef4f2b9"
+              },
+              "annotations": null
+            }
+          ],
+          "invocation": {
+            "configSource": {
+              "uri": "git+https://github.com/tektoncd/catalog.git",
+              "digest": {
+                "sha1": "baf796b714e1aaf4078cbee19de5491a689b8ba7"
+              },
+              "entryPoint": "/task/git-clone/0.6/git-clone.yaml"
+            },
+            "parameters": {
+              "deleteExisting": "true",
+              "depth": "1",
+              "gitInitImage": "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.29.0",
+              "httpProxy": "",
+              "httpsProxy": "",
+              "noProxy": "",
+              "refspec": "",
+              "revision": "",
+              "sparseCheckoutDirectories": "",
+              "sslVerify": "true",
+              "subdirectory": "",
+              "submodules": "true",
+              "url": "https://github.com/bendory/mini-true.git",
+              "userHome": "/tekton/home",
+              "verbose": "true"
+            }
+          },
+          "results": [
+            {
+              "name": "commit",
+              "type": "string",
+              "value": "93c56eeba9ec70f74c9bfd297d9516642d366cb5"
+            },
+            {
+              "name": "url",
+              "type": "string",
+              "value": "https://github.com/bendory/mini-true.git"
+            }
+          ]
+        },
+        {
+          "name": "build",
+          "after": [
+            "fetch-source"
+          ],
+          "ref": {
+            "kind": "Task",
+            "resolver": "git",
+            "params": [
+              {
+                "name": "url",
+                "value": "https://github.com/tektoncd/catalog.git"
+              },
+              {
+                "name": "pathInRepo",
+                "value": "/task/kaniko/0.6/kaniko.yaml"
+              },
+              {
+                "name": "revision",
+                "value": "main"
+              }
+            ]
+          },
+          "startedOn": "2023-01-24T20:09:56Z",
+          "finishedOn": "2023-01-24T20:10:35Z",
+          "status": "Succeeded",
+          "steps": [
+            {
+              "entryPoint": "",
+              "arguments": [
+                "--dockerfile=./Dockerfile",
+                "--context=/workspace/source/./",
+                "--destination=us-docker.pkg.dev/jagathprakash-test/jp-repo/slsa-demo-cluster",
+                "--digest-file=/tekton/results/IMAGE_DIGEST"
+              ],
+              "environment": {
+                "container": "build-and-push",
+                "image": "gcr.io/kaniko-project/executor@sha256:c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5"
+              },
+              "annotations": null
+            },
+            {
+              "entryPoint": "set -e\nimage=\"us-docker.pkg.dev/jagathprakash-test/jp-repo/slsa-demo-cluster\"\necho -n \"${image}\" | tee \"/tekton/results/IMAGE_URL\"\n",
+              "arguments": null,
+              "environment": {
+                "container": "write-url",
+                "image": "docker.io/library/bash@sha256:c523c636b722339f41b6a431b44588ab2f762c5de5ec3bd7964420ff982fb1d9"
+              },
+              "annotations": null
+            }
+          ],
+          "invocation": {
+            "configSource": {
+              "uri": "git+https://github.com/tektoncd/catalog.git",
+              "digest": {
+                "sha1": "baf796b714e1aaf4078cbee19de5491a689b8ba7"
+              },
+              "entryPoint": "/task/kaniko/0.6/kaniko.yaml"
+            },
+            "parameters": {
+              "BUILDER_IMAGE": "gcr.io/kaniko-project/executor:v1.5.1@sha256:c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5",
+              "CONTEXT": "./",
+              "DOCKERFILE": "./Dockerfile",
+              "EXTRA_ARGS": [],
+              "IMAGE": "us-docker.pkg.dev/jagathprakash-test/jp-repo/slsa-demo-cluster"
+            }
+          },
+          "results": [
+            {
+              "name": "IMAGE_DIGEST",
+              "type": "string",
+              "value": "sha256:391404e8d5771126119f70a375c53cf2281e2ddf2262e9a316e12121b04cbaa7"
+            },
+            {
+              "name": "IMAGE_URL",
+              "type": "string",
+              "value": "us-docker.pkg.dev/jagathprakash-test/jp-repo/slsa-demo-cluster"
+            }
+          ]
+        }
+      ]
+    },
+    "metadata": {
+      "buildStartedOn": "2023-01-24T20:09:38Z",
+      "buildFinishedOn": "2023-01-24T20:10:35Z",
+      "completeness": {
+        "parameters": false,
+        "environment": false,
+        "materials": false
+      },
+      "reproducible": false
+    },
+    "materials": [
+      {
+        "uri": "https://github.com/bendory/mini-true.git",
+        "digest": {
+          "sha1": "93c56eeba9ec70f74c9bfd297d9516642d366cb5"
+        }
+      },
+      {
+        "uri": "gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init",
+        "digest": {
+          "sha256": "c0b0ed1cd81090ce8eecf60b936e9345089d9dfdb6ebdd2fd7b4a0341ef4f2b9"
+        }
+      },
+      {
+        "uri": "git+https://github.com/tektoncd/catalog.git",
+        "digest": {
+          "sha1": "baf796b714e1aaf4078cbee19de5491a689b8ba7"
+        }
+      },
+      {
+        "uri": "gcr.io/kaniko-project/executor",
+        "digest": {
+          "sha256": "c6166717f7fe0b7da44908c986137ecfeab21f31ec3992f6e128fff8a94be8a5"
+        }
+      },
+      {
+        "uri": "docker.io/library/bash",
+        "digest": {
+          "sha256": "c523c636b722339f41b6a431b44588ab2f762c5de5ec3bd7964420ff982fb1d9"
+        }
+      }
+    ]
+  }
+}
