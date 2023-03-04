@@ -1,5 +1,5 @@
 # SLSA L2 Demo with Tekton
-This repo shows how Tekton can be used to acheive SLSA L2 requirements.
+This repo shows how Tekton can be used to achieve SLSA L2 requirements.
 
 ### To run the demo
 * Clone the repo.
